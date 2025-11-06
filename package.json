@@ -1,5 +1,5 @@
 {
-  "name": "soksan-phork-lab1",
+  "name": "narin-pich-lab1",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -35,15 +35,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Soksan369/soksan-phork-lab1.git"
+    "url": "git+https://github.com/pichnarin/narin.pich-lab1.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Soksan369/soksan-phork-lab1/issues"
+    "url": "https://github.com/pichnarin/narin-pich-lab1/issues"
   },
-  "homepage": "https://github.com/Soksan369/soksan-phork-lab1#readme",
+  "homepage": "https://github.com/pichnarin/narin-pich-lab1#readme",
   "dependencies": {
     "express": "^4.18.2"
   },

@@ -1,0 +1,84 @@
+name: Node.js CI/CD Pipeline (Yarn)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+      
+      - name: Lint code
+        run: yarn lint
+      
+      - name: Run tests
+        run: yarn test
+      
+      - name: Run tests with coverage
+        run: yarn test:coverage
+      
+      - name: Upload coverage report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report-node-${{ matrix.node-version }}
+          path: coverage/
+          retention-days: 30
+      
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const coverage = fs.readFileSync('coverage/lcov-report/index.html', 'utf8');
+            const lines = coverage.match(/class="strong">(\d+\.\d+)%/g);
+            if (lines) {
+              const percent = lines[0].match(/(\d+\.\d+)/)[0];
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 📊 Code Coverage Report (Node ${{ matrix.node-version }})\n\nCoverage: **${percent}%**\n\nFull report available in workflow artifacts.`
+              });
+            }
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Deploy to Render
+        run: |
+          echo "🚀 Deployment step ready"
+          echo "Configure your deployment service (Render/Vercel/Railway)"
+          echo "Add deployment secrets to GitHub Secrets"
+        # Uncomment and configure based on your deployment service:
+        # For Render:
+        # - Add RENDER_API_KEY and RENDER_SERVICE_ID to GitHub Secrets
+        # - run: |
+        #     curl -X POST "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys" \
+        #       -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+        #       -H "Content-Type: application/json"

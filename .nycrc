@@ -1,0 +1,23 @@
+{
+  "all": true,
+  "include": [
+    "app.js",
+    "server.js"
+  ],
+  "exclude": [
+    "test/**",
+    "node_modules/**",
+    ".github/**"
+  ],
+  "reporter": [
+    "html",
+    "text",
+    "lcov"
+  ],
+  "report-dir": "./coverage",
+  "check-coverage": true,
+  "lines": 80,
+  "statements": 80,
+  "functions": 80,
+  "branches": 80
+}
